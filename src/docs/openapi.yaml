@@ -1,0 +1,438 @@
+openapi: 3.0.0
+info:
+  title: 🚑 MediTime API
+  version: 1.0.0
+  description: |
+    Welcome to the **MediTime API**! 🌟  
+    This API provides a comprehensive set of secure, RESTful endpoints to streamline healthcare operations and deliver exceptional patient care. 🏥💊
+
+    **Key Features** 🔑:
+    - 🔐 Secure user authentication with JWT
+    - 👨‍⚕️ Role-based access for administrators, doctors, and patients
+    - 🗕️ Appointment scheduling and management
+    - 💊 Prescription issuance and tracking
+    - 💳 Online payment processing
+    - 📝 Complaint submission and resolution
+
+    Designed for modern web and mobile applications to create seamless healthcare experiences for all users. 🚀
+
+    Developed with ❤️ by **Joseph Mwangaza**.
+
+  license:
+    name: MIT License
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:5000/api
+    description: 🧪 Local Development Server
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - bearerAuth: []
+
+paths:
+  /login:
+    post:
+      summary: User login
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: user@example.com
+                password:
+                  type: string
+                  example: password123
+      responses:
+        200:
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    example: JWT_TOKEN_HERE
+        401:
+          description: Unauthorized
+
+  /register:
+    post:
+      summary: User registration
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+                email:
+                  type: string
+                contactPhone:
+                  type: string
+                address:
+                  type: string
+                password:
+                  type: string
+      responses:
+        201:
+          description: Registration successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  userId:
+                    type: integer
+                  email:
+                    type: string
+                  role:
+                    type: string
+        400:
+          description: Invalid input
+
+  /doctors:
+    get:
+      summary: Get all doctors
+      tags:
+        - Doctors
+      responses:
+        200:
+          description: List of doctors
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    doctorId:
+                      type: integer
+                    name:
+                      type: string
+                    specialization:
+                      type: string
+
+    post:
+      summary: Add a new doctor
+      tags:
+        - Doctors
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: integer
+                specialization:
+                  type: string
+                contactPhone:
+                  type: string
+                availableDays:
+                  type: string
+      responses:
+        201:
+          description: Doctor created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  doctorId:
+                    type: integer
+                  specialization:
+                    type: string
+
+  /doctors/{id}:
+    get:
+      summary: Get doctor by ID
+      tags:
+        - Doctors
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Doctor found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  doctorId:
+                    type: integer
+                  specialization:
+                    type: string
+        404:
+          description: Not found
+
+  /appointments:
+    get:
+      summary: Get all appointments
+      tags:
+        - Appointments
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+      responses:
+        200:
+          description: List of appointments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    appointmentId:
+                      type: integer
+                    userId:
+                      type: integer
+                    doctorId:
+                      type: integer
+                    appointmentDate:
+                      type: string
+                    timeSlot:
+                      type: string
+
+    post:
+      summary: Create an appointment
+      tags:
+        - Appointments
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: integer
+                doctorId:
+                  type: integer
+                appointmentDate:
+                  type: string
+                timeSlot:
+                  type: string
+                totalAmount:
+                  type: number
+      responses:
+        201:
+          description: Appointment created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  appointmentId:
+                    type: integer
+
+  /appointments/{id}:
+    get:
+      summary: Get appointment by ID
+      tags:
+        - Appointments
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Appointment found
+        404:
+          description: Not found
+
+    put:
+      summary: Update appointment
+      tags:
+        - Appointments
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                appointmentDate:
+                  type: string
+                timeSlot:
+                  type: string
+      responses:
+        200:
+          description: Appointment updated
+
+    delete:
+      summary: Delete appointment
+      tags:
+        - Appointments
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        204:
+          description: Appointment deleted
+
+  /prescriptions:
+    get:
+      summary: Get all prescriptions
+      tags:
+        - Prescriptions
+      responses:
+        200:
+          description: List of prescriptions
+
+    post:
+      summary: Create a prescription
+      tags:
+        - Prescriptions
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                appointmentId:
+                  type: integer
+                doctorId:
+                  type: integer
+                patientId:
+                  type: integer
+                notes:
+                  type: string
+      responses:
+        201:
+          description: Prescription created
+
+  /payments:
+    post:
+      summary: Make a payment
+      tags:
+        - Payments
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                appointmentId:
+                  type: integer
+                amount:
+                  type: number
+                transactionId:
+                  type: string
+                paymentDate:
+                  type: string
+      responses:
+        200:
+          description: Payment successful
+
+  /complaints:
+    get:
+      summary: Get all complaints
+      tags:
+        - Complaints
+      responses:
+        200:
+          description: List of complaints
+
+    post:
+      summary: Submit a complaint
+      tags:
+        - Complaints
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: integer
+                relatedAppointmentId:
+                  type: integer
+                subject:
+                  type: string
+                description:
+                  type: string
+      responses:
+        201:
+          description: Complaint submitted
+
+  /users:
+    get:
+      summary: Get all users
+      tags:
+        - Users
+      responses:
+        200:
+          description: List of users
+
+    post:
+      summary: Create a user
+      tags:
+        - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+                email:
+                  type: string
+                contactPhone:
+                  type: string
+                address:
+                  type: string
+                password:
+                  type: string
+      responses:
+        201:
+          description: User created
