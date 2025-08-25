@@ -5,6 +5,12 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken"
 import { sendNotificationEmail } from "../middleware/nodeMailer";
 
+// ✅ Ensure JWT_SECRET is loaded once and reusable
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+    throw new Error("❌ JWT_SECRET is not defined in environment variables!");
+}
+
 export const registerUser = async (req: Request, res: Response) => {     
     try {
         // Validate user input
@@ -189,6 +195,8 @@ export const updatePassword = async (req: Request, res: Response) => {
         res.status(500).json({ error: error.message || "Invalid or expired token" });
     }
 };
+
+
 
 export const emailVerfication = async(req: Request, res: Response) => {
     const { email, confirmationCode } = req.body;
