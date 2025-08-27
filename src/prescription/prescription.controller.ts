@@ -37,6 +37,8 @@ export const getPrescriptionById = async (req: Request, res: Response) => {
     }
 }
 
+   
+
 export const createPrescription = async (req: Request, res: Response) => {
     const prescriptionData = prescriptionValidator.safeParse(req.body);
     if (!prescriptionData.success) {
