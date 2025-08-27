@@ -29,6 +29,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(logger);
 
 // ✅ Other routes
+
+
 app.use('/api', authRouter);
 app.use('/api', doctorRouter);
 app.use('/api', appointmentRouter);
